@@ -1,0 +1,32 @@
+MAJOR := 0
+MINOR := 0
+LIBRARY := libbittree
+TARGET := $(LIBRARY).so.$(MAJOR).$(MINOR)
+CSRC := bitree.c
+OBJECTS := $(patsubst %.c,%.o,$(CSRC))
+CFLAGS := -fpic -g -Werror -Wall
+INCLUDES := -I.
+
+all:$(TARGET)
+
+$(TARGET): $(OBJECTS)
+	gcc -shared -Wl,-soname,$(LIBRARY).so.$(MAJOR) -o $(LIBRARY).so.$(MAJOR).$(MINOR) $(OBJECTS)
+	find . -type l -a -name "*$(LIBRARY)*" -print0|xargs -0 -I{} rm -f {}
+	ln -s $(LIBRARY).so.$(MAJOR).$(MINOR) $(LIBRARY).so.$(MAJOR)
+	ln -s $(LIBRARY).so.$(MAJOR).$(MINOR) $(LIBRARY).so
+
+# pull in dependency info for *existing* .o files
+-include $(OBJECTS:.o=.d)
+
+# compile and generate dependency info
+%.o: %.c
+	gcc -c $(CFLAGS) $(INCLUDES) $*.c -o $*.o
+	gcc -MM $(CFLAGS) $(INCLUDES) $*.c > $*.d
+
+# remove compilation products
+clean:
+	rm -f $(LIBRARY).so.$(MAJOR).$(MINOR)
+	rm -f $(LIBRARY).so.$(MAJOR)
+	rm -f $(LIBRARY).so
+	rm -f $(OBJECTS) $(patsubst %.o,%.d,$(OBJECTS))
+
