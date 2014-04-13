@@ -107,10 +107,12 @@ int main(int argc, char *argv[])
 	int i = 1;
 	while(i < argc) {
 		printf("%s\n",argv[i]);
-		qksort(argv[i], strlen(argv[i]), sizeof(*argv[0]), compare_char);
+		qksort(argv[i], strlen(argv[i]), sizeof(*argv[0]),
+				compare_char);
 		printf("%s\n",argv[i]);
       i++;
 	}
 
 	return 0;
 }
+
