@@ -3,7 +3,8 @@
 #include <string.h>
 
 
-int issort(void *data, int size, int esize, int (*compare)(void *key1, void *key2))
+int issort(void *data, int size, int esize,
+		int (*compare)(void *key1, void *key2))
 {
 	int ret = -1;
 	int i = 0;
