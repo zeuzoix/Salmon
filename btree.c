@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <string.h>
 #include <btree.h>
 
@@ -27,11 +28,11 @@ void btree_destroy(struct btree *tree)
 	memset(tree, 0, sizeof(*tree));
 
 LBL_RET:
-	return
+	return;
 }
 
-int btree_node_insert_left(struct btree *tree, struct btree_node *node, 
-				void *data)
+int btree_insert_left(struct btree *tree, struct btree_node *node,
+			void *data)
 {
 	int ret = -1;
 	struct btree_node **position = NULL;
@@ -46,14 +47,14 @@ int btree_node_insert_left(struct btree *tree, struct btree_node *node,
 			ret = -2;
 			goto LBL_RET;
 		}
-		position = &tree->root:
+		position = &tree->root;
 	}
 	else {
 		if(!btree_node_is_eob(node->left)) {
 			ret = -3;
 			goto LBL_RET;
 		}
-		position = &node->left
+		position = &node->left;
 	}
 
 	*position = malloc(sizeof(**position));
@@ -73,8 +74,8 @@ LBL_RET:
 	return ret;
 }
 
-int btree_node_insert_right(struct btree *tree, struct btree_node *node,
-				void *data)
+int btree_insert_right(struct btree *tree, struct btree_node *node,
+			void *data)
 {
 	int ret = -1;
 	struct btree_node **position = NULL;
@@ -89,14 +90,14 @@ int btree_node_insert_right(struct btree *tree, struct btree_node *node,
 			ret = -2;
 			goto LBL_RET;
 		}
-		position = &tree->root:
+		position = &tree->root;
 	}
 	else {
 		if(!btree_node_is_eob(node->left)) {
 			ret = -3;
 			goto LBL_RET;
 		}
-		position = &node->left
+		position = &node->left;
 	}
 
 	*position = malloc(sizeof(**position));
@@ -123,10 +124,10 @@ void btree_remove_left(struct btree *tree, struct btree_node *node)
 	if((NULL == tree) || (0 == btree_size(tree)))
 		goto LBL_RET;
 
-	if(NULL == node) 
-		*position = &tree->root;
+	if(NULL == node)
+		position = &tree->root;
 	else
-		*position = &node->left;
+		position = &node->left;
 
 	if(NULL != *position) {
 		btree_remove_left(tree, (*position));
@@ -153,9 +154,9 @@ void btree_remove_right(struct btree *tree, struct btree_node *node)
 		goto LBL_RET;
 
 	if(NULL == node)
-		*position = &tree->root;
+		position = &tree->root;
 	else
-		*position = &node->right;
+		position = &node->right;
 
 	if(NULL != *position) {
 		btree_remove_left(tree, (*position));
@@ -173,8 +174,38 @@ LBL_RET:
 	return;
 }
 
-int btree_merge(struct btree *merge, struct btree *left, 
+int btree_merge(struct btree *merge, struct btree *left,
 			struct btree *right, void *data)
 {
+	int ret = -1;
 
+	if((NULL == merge)||(NULL == left)||(NULL == right)||(NULL == data)) {
+		ret = -1;
+		goto LBL_RET;
+	}
+
+	if(left->destroy != right->destroy) {
+		ret = -2;
+		goto LBL_RET;
+	}
+
+	btree_init(merge, left->destroy);
+
+	if(0 != btree_insert_left(merge, NULL, data)) {
+		ret = -3;
+		goto LBL_RET;
+	}
+
+	btree_node_left(btree_root(merge)) = btree_root(left);
+	btree_root(left) = NULL;
+	btree_node_right(btree_root(merge)) = btree_root(right);
+	btree_root(right) = NULL;
+
+	btree_size(merge) = btree_size(left) + btree_size(right);
+	btree_size(left) = 0;
+	btree_size(right) = 0;
+
+	ret = 0;
+LBL_RET:
+	return ret;
 }

@@ -18,7 +18,7 @@ void btree_init(struct btree *tree, void (*destroy)(void *data));
 
 void btree_destroy(struct btree *tree);
 
-int btree_insert_left(struct btree *tree, struct btree_node *node, 
+int btree_insert_left(struct btree *tree, struct btree_node *node,
 				void *data);
 
 int btree_insert_right(struct btree *tree, struct btree_node *node,
@@ -28,7 +28,7 @@ void btree_remove_left(struct btree *tree, struct btree_node *node);
 
 void btree_remove_right(struct btree *tree, struct btree_node *node);
 
-int btree_merge(struct btree *merge, struct btree *left, 
+int btree_merge(struct btree *merge, struct btree *left,
 			struct btree *right, void *data);
 
 #define btree_size(tree) ((tree)->size)
