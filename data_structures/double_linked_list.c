@@ -187,7 +187,7 @@ int dll_remove(struct dll *list, struct dll_node *node, void **data)
 		temp = NULL;
 	}
 
-	list->size++;
+	list->size--;
 	ret = 0;
 			
 END:
