@@ -57,7 +57,7 @@ int cll_insert_next(struct cll *list, struct cll_node *node, void *data)
 		goto END;
 	}
 
-	if ((NULL == node) && (0 != cll_size(list))) ||
+	if ((NULL == node) && (0 != cll_size(list))) {
 		ret = -3;
 		goto END;
 	}
@@ -67,7 +67,7 @@ int cll_insert_next(struct cll *list, struct cll_node *node, void *data)
 		goto END;
 	}
 
-	new = (struct cll *)malloc(sizeof(*new));
+	new = (struct cll_node *)malloc(sizeof(*new));
 	if (NULL == new) {
 		ret = -5;
 		goto END;
@@ -115,11 +115,10 @@ int cll_remove_next(struct cll *list, struct cll_node *node, void **data)
 		node->next = temp->next;
 	}
 
-
 	*data = temp->data;
 	free(temp);
-	list->size -= 1;
 
+	list->size -= 1;
 	ret = 0;
 END:
 	return ret;
